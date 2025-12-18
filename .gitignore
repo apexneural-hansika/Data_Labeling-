@@ -58,3 +58,9 @@ Thumbs.db
 
 # Experience database (optional - uncomment if you want to ignore)
 # experiences.json
+
+# Node modules
+node_modules/
+
+# Test data (large files)
+data/test_data/

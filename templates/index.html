@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusAI - Next-Gen Data Labeling</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=3.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='ui_enhancements.css') }}?v=1.1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='label_ui_improvements.css') }}?v=1.0">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Navigation -->
+        <nav class="navbar-simple">
+            <a href="/" class="nav-home">← Home</a>
+            <span class="nav-title">NexusAI</span>
+        </nav>
+
+        <!-- Header -->
+        <header class="header">
+            <h1 class="title animate-fade-in">
+                <span class="icon">⚡</span>
+                NexusAI
+            </h1>
+            <p class="subtitle animate-fade-in-delay">Next-Generation Multi-Modal Content Analysis & Labeling</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Upload Section -->
+            <div class="upload-section animate-slide-up">
+                <div class="upload-card">
+                    <div class="upload-icon">
+                        <svg class="upload-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <h2>Upload File</h2>
+                    <p class="upload-hint">Support: Text, Images, Audio</p>
+
+                    <form id="uploadForm" class="upload-form" enctype="multipart/form-data">
+                        <div class="file-input-wrapper">
+                            <div class="drop-zone" id="dropZone">
+                                <div class="drop-zone-content">
+                                    <div class="drop-icon">📤</div>
+                                    <p class="drop-text">Drag & Drop your file here</p>
+                                    <p class="drop-subtext">or click to browse</p>
+                                </div>
+                                <input type="file" id="fileInput" class="file-input"
+                                    accept=".pdf,.txt,.docx,.doc,.csv,.jpg,.jpeg,.png,.gif,.bmp,.webp,.mp3,.wav,.flac,.m4a,.mp4,.avi,.mov">
+                            </div>
+                            <div class="file-preview" id="filePreview"></div>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn">
+                            <span class="btn-text">Process File</span>
+                            <span class="btn-loader"></span>
+                        </button>
+                    </form>
+
+                    <div id="fileName" class="file-name"></div>
+                    <div class="file-info" id="fileInfo"></div>
+                </div>
+            </div>
+
+            <!-- Processing Status -->
+            <div id="processingStatus" class="processing-status hidden">
+                <div class="status-card">
+                    <div class="status-header">
+                        <h3>Processing Pipeline</h3>
+                        <div class="status-indicator">
+                            <div class="pulse-dot"></div>
+                            <span>In Progress</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                    <div class="pipeline-steps">
+                        <div class="step" data-step="router" onclick="toggleStepDetails(this)">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="20" fill="url(#routerStepGradient)"/>
+                                    <path d="M15 24L21 18M33 24L27 18M21 18L24 15L27 18M15 24L24 33L33 24" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="15" cy="24" r="2.5" fill="white"/>
+                                    <circle cx="33" cy="24" r="2.5" fill="white"/>
+                                    <circle cx="24" cy="15" r="2.5" fill="white"/>
+                                    <defs>
+                                        <linearGradient id="routerStepGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stop-color="#BFB4A3"/>
+                                            <stop offset="100%" stop-color="#716B62"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Router Agent</div>
+                                <div class="step-desc">Classifying modality...</div>
+                                <div class="step-details">
+                                    <p>Analyzing file type and routing to appropriate processing pipeline</p>
+                                </div>
+                            </div>
+                            <div class="step-status"></div>
+                        </div>
+                        <div class="step" data-step="extractor" onclick="toggleStepDetails(this)">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="9" y="12" width="30" height="36" rx="3" fill="url(#extractorStepGradient)"/>
+                                    <path d="M15 21H33M15 27H33M15 33H27" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                                    <path d="M18 15V9C18 8.44772 18.4477 8 19 8H29C29.5523 8 30 8.44772 30 9V15" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="21" cy="39" r="1.5" fill="white"/>
+                                    <circle cx="27" cy="39" r="1.5" fill="white"/>
+                                    <defs>
+                                        <linearGradient id="extractorStepGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stop-color="#D4CBB8"/>
+                                            <stop offset="100%" stop-color="#BFB4A3"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Content Extractor</div>
+                                <div class="step-desc">Extracting content...</div>
+                                <div class="step-details">
+                                    <p>Using OCR, Whisper, and Vision APIs to extract content from files</p>
+                                </div>
+                            </div>
+                            <div class="step-status"></div>
+                        </div>
+                        <div class="step" data-step="classifier" onclick="toggleStepDetails(this)">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M24 9L31.5 16.5H28.5V33H19.5V16.5H16.5L24 9Z" fill="url(#classifierStepGradient)"/>
+                                    <path d="M15 36H33C34.1046 36 35 36.8954 35 38V41C35 42.1046 34.1046 43 33 43H15C13.8954 43 13 42.1046 13 41V38C13 36.8954 13.8954 36 15 36Z" fill="url(#classifierStepGradient)"/>
+                                    <circle cx="24" cy="22.5" r="3" fill="white"/>
+                                    <defs>
+                                        <linearGradient id="classifierStepGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stop-color="#BFB4A3"/>
+                                            <stop offset="50%" stop-color="#8B857A"/>
+                                            <stop offset="100%" stop-color="#716B62"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Category Classifier</div>
+                                <div class="step-desc">Assigning category...</div>
+                                <div class="step-details">
+                                    <p>Analyzing content to assign appropriate categories dynamically</p>
+                                </div>
+                            </div>
+                            <div class="step-status"></div>
+                        </div>
+                        <div class="step" data-step="labeler" onclick="toggleStepDetails(this)">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="24" cy="24" r="18" fill="url(#labelerStepGradient)"/>
+                                    <path d="M18 24L22 28L30 20" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="15" cy="15" r="2" fill="white" opacity="0.8"/>
+                                    <circle cx="33" cy="15" r="2" fill="white" opacity="0.8"/>
+                                    <circle cx="15" cy="33" r="2" fill="white" opacity="0.8"/>
+                                    <circle cx="33" cy="33" r="2" fill="white" opacity="0.8"/>
+                                    <defs>
+                                        <linearGradient id="labelerStepGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stop-color="#D4CBB8"/>
+                                            <stop offset="50%" stop-color="#BFB4A3"/>
+                                            <stop offset="100%" stop-color="#8B857A"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Label Generator</div>
+                                <div class="step-desc">Generating labels...</div>
+                                <div class="step-details">
+                                    <p>Extracting structured labels including topics, entities, and keywords</p>
+                                </div>
+                            </div>
+                            <div class="step-status"></div>
+                        </div>
+                        <div class="step" data-step="quality" onclick="toggleStepDetails(this)">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="6" y="6" width="36" height="36" rx="6" fill="url(#qualityStepGradient)"/>
+                                    <path d="M18 24L22 28L30 20" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <defs>
+                                        <linearGradient id="qualityStepGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stop-color="#BFB4A3"/>
+                                            <stop offset="100%" stop-color="#716B62"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">Quality Check</div>
+                                <div class="step-desc">Validating quality...</div>
+                                <div class="step-details">
+                                    <p>Validating output quality and calculating confidence scores</p>
+                                </div>
+                            </div>
+                            <div class="step-status"></div>
+                        </div>
+                        <div class="step" data-step="output" onclick="toggleStepDetails(this)">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="9" y="9" width="30" height="30" rx="3" fill="url(#outputStepGradient)"/>
+                                    <rect x="13.5" y="18" width="9" height="3" rx="1.5" fill="white" opacity="0.9"/>
+                                    <rect x="13.5" y="24" width="15" height="3" rx="1.5" fill="white" opacity="0.9"/>
+                                    <rect x="13.5" y="30" width="12" height="3" rx="1.5" fill="white" opacity="0.9"/>
+                                    <rect x="25.5" y="18" width="9" height="3" rx="1.5" fill="white" opacity="0.7"/>
+                                    <rect x="25.5" y="24" width="9" height="3" rx="1.5" fill="white" opacity="0.7"/>
+                                    <rect x="25.5" y="30" width="9" height="3" rx="1.5" fill="white" opacity="0.7"/>
+                                    <defs>
+                                        <linearGradient id="outputStepGradient" x1="0" y1="0" x2="48" y2="48">
+                                            <stop offset="0%" stop-color="#8B857A"/>
+                                            <stop offset="50%" stop-color="#BFB4A3"/>
+                                            <stop offset="100%" stop-color="#D4CBB8"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <div class="step-content">
+                                <div class="step-title">JSON Output</div>
+                                <div class="step-desc">Formatting output...</div>
+                                <div class="step-details">
+                                    <p>Formatting final output as structured JSON with complete metadata</p>
+                                </div>
+                            </div>
+                            <div class="step-status"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section hidden">
+                <div class="results-card">
+                    <!-- Results Header with Agent Info -->
+                    <div class="results-header">
+                        <div class="results-title-section">
+                            <h3>🎯 Labeling Results</h3>
+                            <div class="agent-badge" id="agentBadge">
+                                <span class="agent-icon">🤖</span>
+                                <span class="agent-text">Processed by <strong id="agentCount">0</strong> agents</span>
+                            </div>
+                        </div>
+                        <div class="header-actions">
+                            <button class="action-btn" id="downloadBtn" title="Download JSON">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download
+                            </button>
+                            <button class="action-btn" id="copyBtn" title="Copy JSON">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                                </svg>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="results-content">
+                        <!-- Key Metrics Grid -->
+                        <div class="metrics-grid">
+                            <div class="metric-card" data-metric="file">
+                                <div class="metric-icon">
+                                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <rect x="8" y="6" width="24" height="28" rx="3" fill="url(#fileIconGradient)"/>
+                                        <path d="M14 14H26M14 20H26M14 26H22" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <path d="M18 10V8C18 7.44772 18.4477 7 19 7H21C21.5523 7 22 7.44772 22 8V10" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                                        <defs>
+                                            <linearGradient id="fileIconGradient" x1="0" y1="0" x2="40" y2="40">
+                                                <stop offset="0%" stop-color="#D4CBB8"/>
+                                                <stop offset="100%" stop-color="#BFB4A3"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">File Name</div>
+                                    <div class="metric-value" id="resultFileName">-</div>
+                                </div>
+                            </div>
+
+                            <div class="metric-card" data-metric="modality">
+                                <div class="metric-icon">
+                                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="20" cy="20" r="16" fill="url(#modalityIconGradient)"/>
+                                        <path d="M12 20L18 14M28 20L22 14M18 14L20 12L22 14M12 20L20 28L28 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <circle cx="12" cy="20" r="2" fill="white"/>
+                                        <circle cx="28" cy="20" r="2" fill="white"/>
+                                        <circle cx="20" cy="12" r="2" fill="white"/>
+                                        <defs>
+                                            <linearGradient id="modalityIconGradient" x1="0" y1="0" x2="40" y2="40">
+                                                <stop offset="0%" stop-color="#BFB4A3"/>
+                                                <stop offset="100%" stop-color="#716B62"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">Modality</div>
+                                    <div class="metric-value">
+                                        <span class="badge badge-modality" id="resultModality">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="metric-card" data-metric="category">
+                                <div class="metric-icon">
+                                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 8L26 14H24V26H16V14H14L20 8Z" fill="url(#categoryIconGradient)"/>
+                                        <path d="M12 28H28C29.1046 28 30 28.8954 30 30V32C30 33.1046 29.1046 34 28 34H12C10.8954 34 10 33.1046 10 32V30C10 28.8954 10.8954 28 12 28Z" fill="url(#categoryIconGradient)"/>
+                                        <circle cx="20" cy="18" r="2.5" fill="white"/>
+                                        <defs>
+                                            <linearGradient id="categoryIconGradient" x1="0" y1="0" x2="40" y2="40">
+                                                <stop offset="0%" stop-color="#BFB4A3"/>
+                                                <stop offset="50%" stop-color="#8B857A"/>
+                                                <stop offset="100%" stop-color="#716B62"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">Category</div>
+                                    <div class="metric-value">
+                                        <span class="badge badge-category" id="resultCategory">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="metric-card" data-metric="quality">
+                                <div class="metric-icon">
+                                    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 6L24.5 15.5L35 17L27.5 24L29 34.5L20 29.5L11 34.5L12.5 24L5 17L15.5 15.5L20 6Z" fill="url(#qualityIconGradient)"/>
+                                        <defs>
+                                            <linearGradient id="qualityIconGradient" x1="0" y1="0" x2="40" y2="40">
+                                                <stop offset="0%" stop-color="#D4CBB8"/>
+                                                <stop offset="50%" stop-color="#BFB4A3"/>
+                                                <stop offset="100%" stop-color="#8B857A"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </div>
+                                <div class="metric-content">
+                                    <div class="metric-label">Quality Score</div>
+                                    <div class="quality-display-enhanced" id="resultQuality">
+                                        <div class="quality-bar-container">
+                                            <div class="quality-bar-fill" id="qualityBarFill"></div>
+                                            <div class="quality-percentage" id="qualityPercentage">0%</div>
+                                        </div>
+                                        <div class="quality-status-badge" id="qualityStatusBadge">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Processing Time & Confidence -->
+                        <div class="stats-row">
+                            <div class="stat-item">
+                                <span class="stat-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="url(#clockIconGradient)" stroke-width="2" fill="none"/>
+                                        <path d="M12 6V12L16 14" stroke="url(#clockIconGradient)" stroke-width="2" stroke-linecap="round"/>
+                                        <defs>
+                                            <linearGradient id="clockIconGradient" x1="0" y1="0" x2="24" y2="24">
+                                                <stop offset="0%" stop-color="#BFB4A3"/>
+                                                <stop offset="100%" stop-color="#716B62"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span class="stat-label">Processing Time:</span>
+                                <span class="stat-value" id="processingTime">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="12" cy="12" r="10" stroke="url(#targetIconGradient)" stroke-width="2" fill="none"/>
+                                        <circle cx="12" cy="12" r="6" stroke="url(#targetIconGradient)" stroke-width="2" fill="none"/>
+                                        <circle cx="12" cy="12" r="2" fill="url(#targetIconGradient)"/>
+                                        <defs>
+                                            <linearGradient id="targetIconGradient" x1="0" y1="0" x2="24" y2="24">
+                                                <stop offset="0%" stop-color="#BFB4A3"/>
+                                                <stop offset="100%" stop-color="#716B62"/>
+                                            </linearGradient>
+                                        </defs>
+                                    </svg>
+                                </span>
+                                <span class="stat-label">Confidence:</span>
+                                <span class="stat-value" id="confidenceScore">-</span>
+                            </div>
+                        </div>
+
+                        <!-- Labels Section with Enhanced Display -->
+                        <div class="result-section expandable expanded">
+                            <div class="result-section-header" id="labelsHeader">
+                                <div class="section-title">
+                                    <span class="section-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12 4L16 8H14V16H10V8H8L12 4Z" fill="url(#labelsIconGradient)"/>
+                                            <path d="M6 18H18C19.1046 18 20 18.8954 20 20V21C20 22.1046 19.1046 23 18 23H6C4.89543 23 4 22.1046 4 21V20C4 18.8954 4.89543 18 6 18Z" fill="url(#labelsIconGradient)"/>
+                                            <circle cx="12" cy="12" r="1.5" fill="white"/>
+                                            <defs>
+                                                <linearGradient id="labelsIconGradient" x1="0" y1="0" x2="24" y2="24">
+                                                    <stop offset="0%" stop-color="#BFB4A3"/>
+                                                    <stop offset="50%" stop-color="#8B857A"/>
+                                                    <stop offset="100%" stop-color="#716B62"/>
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                    </span>
+                                    <span class="section-label">Generated Labels</span>
+                                    <span class="label-count-badge" id="labelCountBadge">0 labels</span>
+                                </div>
+                                <button class="expand-btn" id="expandLabels">▼</button>
+                            </div>
+                            <div class="result-section-content" id="labelsContent">
+                                <!-- Search and Filter Bar -->
+                                <div class="labels-search-container">
+                                    <input type="text" 
+                                           class="labels-search-input" 
+                                           id="labelsSearchInput" 
+                                           placeholder="Search labels...">
+                                    <div class="labels-filter-buttons">
+                                        <button class="filter-btn active" data-filter="all">All</button>
+                                        <button class="filter-btn" data-filter="text">Text</button>
+                                        <button class="filter-btn" data-filter="array">Arrays</button>
+                                        <button class="filter-btn" data-filter="object">Objects</button>
+                                    </div>
+                                    <div class="label-count-display">
+                                        Showing <strong id="visibleLabelCount">0</strong> of <strong id="totalLabelCount">0</strong> labels
+                                    </div>
+                                </div>
+                                <!-- Visual Label Cards -->
+                                <div class="labels-visual-grid" id="labelsVisualGrid"></div>
+                                <!-- JSON View -->
+                                <div class="json-view-container">
+                                    <div class="json-view-header">
+                                        <span>JSON Structure</span>
+                                        <button class="json-toggle-btn" id="toggleJsonView">Show Raw JSON</button>
+                                    </div>
+                                    <pre class="result-json" id="resultLabels">-</pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Full JSON Output -->
+                        <div class="result-section expandable">
+                            <div class="result-section-header" id="jsonHeader">
+                                <div class="section-title">
+                                    <span class="section-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <rect x="4" y="4" width="16" height="16" rx="2" fill="url(#jsonIconGradient)"/>
+                                            <rect x="7" y="8" width="6" height="2" rx="1" fill="white" opacity="0.9"/>
+                                            <rect x="7" y="12" width="10" height="2" rx="1" fill="white" opacity="0.9"/>
+                                            <rect x="7" y="16" width="8" height="2" rx="1" fill="white" opacity="0.9"/>
+                                            <rect x="15" y="8" width="4" height="2" rx="1" fill="white" opacity="0.7"/>
+                                            <rect x="15" y="12" width="4" height="2" rx="1" fill="white" opacity="0.7"/>
+                                            <rect x="15" y="16" width="4" height="2" rx="1" fill="white" opacity="0.7"/>
+                                            <defs>
+                                                <linearGradient id="jsonIconGradient" x1="0" y1="0" x2="24" y2="24">
+                                                    <stop offset="0%" stop-color="#8B857A"/>
+                                                    <stop offset="50%" stop-color="#BFB4A3"/>
+                                                    <stop offset="100%" stop-color="#D4CBB8"/>
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                    </span>
+                                    <span class="section-label">Complete Output</span>
+                                </div>
+                                <button class="expand-btn" id="expandJson">▼</button>
+                            </div>
+                            <div class="result-section-content" id="jsonContent">
+                                <pre class="result-json" id="resultFullJson">-</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="errorSection" class="error-section hidden">
+                <div class="error-card">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Error</h3>
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Powered by NexusAI • Advanced Agents • Multi-Modal Processing • Quality Assurance</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

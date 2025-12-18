@@ -45,19 +45,17 @@ logs/
 # Uploads and outputs
 uploads/
 output/
-*.json
-!requirements*.txt
-!package*.json
+data/uploads/
+data/output/
+data/logs/
+
+# Specific JSON files to ignore (keep package.json and config files)
+experiences.json
+evaluation/
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Test data (optional - uncomment if you want to ignore test data)
-# test_data/
-
-# Experience database (optional - uncomment if you want to ignore)
-# experiences.json
 
 # Node modules
 node_modules/
